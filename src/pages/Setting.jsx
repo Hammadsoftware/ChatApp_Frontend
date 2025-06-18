@@ -26,35 +26,46 @@ const Settings = () => {
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
-    setFile(selected);
-    if (selected) {
-      setPreview(URL.createObjectURL(selected));
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPicture(reader.result);
-      };
-      reader.readAsDataURL(selected);
+    if (!selected) return;
+
+    // ✅ Validate image type
+    if (!selected.type.startsWith('image/')) {
+      setMessage('Only image files are allowed.');
+      return;
     }
+
+    setFile(selected);
+    setPreview(URL.createObjectURL(selected));
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPicture(reader.result); // base64 string
+    };
+    reader.readAsDataURL(selected);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
+
     if (!username || !email) {
       setMessage('Please fill all fields.');
       return;
     }
+
     setLoading(true);
     try {
       const payload = {
         _id: authUser._id,
         username,
         email,
-        picture,
+        picture, // base64 image
       };
+
       const res = await axiosInstance.put('/auth/update-profile', payload, {
         withCredentials: true,
       });
+
       setAuthUser(res.data.user);
       setMessage('Profile updated successfully!');
     } catch (err) {
