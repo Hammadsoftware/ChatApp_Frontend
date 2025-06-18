@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { axiosInstance } from '../lib/axios';
 import useAuthStore from '../store/useAuthStore';
 
-const Sidebar = ({ onSelectUser }) => {
+const Sidebar = ({ onSelectUser, isOpen = true, onClose }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const authUser = useAuthStore((state) => state.authUser);
@@ -25,7 +25,25 @@ const Sidebar = ({ onSelectUser }) => {
   }, [authUser?._id]);
 
   return (
-    <div className="w-72 h-screen bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#24243e] text-white shadow-2xl border-r border-purple-800 overflow-y-auto backdrop-blur-xl">
+    <div
+      className={`
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        md:translate-x-0 transform transition-transform duration-300 ease-in-out
+        fixed md:static top-0 left-0 z-50 w-64 h-full
+        bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#24243e]
+        text-white shadow-2xl border-r border-purple-800 overflow-y-auto backdrop-blur-xl
+      `}
+    >
+      {/* Close Button for Mobile */}
+      <div className="md:hidden flex justify-end p-3">
+        <button
+          onClick={onClose}
+          className="text-white bg-pink-600 px-2 py-1 rounded hover:bg-pink-700 transition"
+        >
+          ✖ Close
+        </button>
+      </div>
+
       {/* Branding */}
       <div className="p-5 text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 tracking-wide">
         ⚡ NovaChat
@@ -41,7 +59,10 @@ const Sidebar = ({ onSelectUser }) => {
           {users.map((user) => (
             <div
               key={user._id}
-              onClick={() => onSelectUser?.(user)}
+              onClick={() => {
+                onSelectUser?.(user);
+                onClose?.(); // auto-close sidebar on mobile after selecting
+              }}
               className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 hover:backdrop-blur-md transition-all duration-300 cursor-pointer shadow-sm hover:shadow-pink-500/30 group"
             >
               {/* Avatar */}
