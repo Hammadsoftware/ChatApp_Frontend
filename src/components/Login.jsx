@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaEnvelope, FaLock, FaComments } from 'react-icons/fa';
 import { SiChatbot } from 'react-icons/si';
 import { useNavigate } from 'react-router-dom';
 import { axiosInstance } from '../lib/axios';
 import useAuthStore from '../store/useAuthStore';
+import socket from '../lib/socket'; // ✅ import socket instance
 
 const Login = ({ setLogin }) => {
   const setAuthUser = useAuthStore((state) => state.setAuthUser);
@@ -11,6 +12,15 @@ const Login = ({ setLogin }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+
+  // ✅ Optional: Log socket connection
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('✅ Socket connected:', socket.id);
+    });
+
+    return () => socket.off('connect');
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -30,7 +40,12 @@ const Login = ({ setLogin }) => {
         { email: form.email, password: form.password },
         { withCredentials: true }
       );
+
       setAuthUser(res.data.user);
+
+      // ✅ Emit login event to Socket.IO server
+      socket.emit('new-user', res.data.user._id);
+
       setMessage('Login successful! Redirecting...');
       setTimeout(() => {
         navigate('/');
