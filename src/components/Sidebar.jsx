@@ -9,12 +9,14 @@ const Sidebar = ({ onSelectUser, isOpen = true, onClose }) => {
 
   useEffect(() => {
     const fetchAllUsers = async () => {
+      setLoading(true); // Ensure loading is true at the start of fetch
       try {
         const res = await axiosInstance.get('/auth/getAllUser', { withCredentials: true });
         const userList = Array.isArray(res.data) ? res.data : res.data.users || [];
         const filtered = userList.filter((user) => user._id !== authUser?._id);
         setUsers(filtered);
       } catch (err) {
+        console.error("Failed to fetch users:", err); // Log the error for debugging
         setUsers([]);
       } finally {
         setLoading(false);
@@ -49,9 +51,21 @@ const Sidebar = ({ onSelectUser, isOpen = true, onClose }) => {
         ⚡ NovaChat
       </div>
 
-      {/* Loading or Empty */}
+      {/* Loading State: Skeleton Loader */}
       {loading ? (
-        <div className="p-6 text-purple-300 text-center animate-pulse">Fetching vibes...</div>
+        <div className="p-2 space-y-3">
+          {[...Array(5)].map((_, index) => ( // Render 5 skeleton items
+            <div
+              key={index}
+              className="flex items-center gap-4 p-3 rounded-xl bg-white/5 animate-pulse shadow-sm"
+            >
+              {/* Avatar Skeleton */}
+              <div className="w-11 h-11 rounded-full bg-gray-700"></div>
+              {/* Username Skeleton */}
+              <div className="flex-1 h-4 rounded bg-gray-700"></div>
+            </div>
+          ))}
+        </div>
       ) : users.length === 0 ? (
         <div className="p-6 text-pink-300 text-center">No chatmates found 💔</div>
       ) : (

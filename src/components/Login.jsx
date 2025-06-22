@@ -3,6 +3,7 @@ import { FaEnvelope, FaLock, FaComments } from 'react-icons/fa';
 import { SiChatbot } from 'react-icons/si';
 import { useNavigate } from 'react-router-dom';
 import { axiosInstance } from '../lib/axios';
+import Loader from './Loader';
 import useAuthStore from '../store/useAuthStore';
 import socket from '../lib/socket'; // ✅ import socket instance
 
@@ -55,6 +56,13 @@ const Login = ({ setLogin }) => {
     }
     setLoading(false);
   };
+  if (loading){
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#0f0f1b] via-[#141529] to-[#1a1b2f] text-white">
+        <div className="text-2xl font-bold text-purple-400"><Loader/></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-[#0f0f1b] via-[#141529] to-[#1a1b2f] text-white">
