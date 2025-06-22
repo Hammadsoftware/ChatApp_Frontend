@@ -1,30 +1,35 @@
 import React from 'react';
 
 /**
- * A reusable Skeleton Loader component for displaying loading placeholders.
- * It mimics the structure of an item list, typically used for user lists, feeds, etc.
+ * A reusable Spinning Loader component.
+ * Displays a circular spinner with a pink-purple gradient, indicating a loading state.
  *
  * @param {object} props - The component props.
- * @param {number} [props.count=5] - The number of skeleton items to render.
- * @param {string} [props.className=""] - Additional Tailwind CSS classes to apply to the container.
- * @returns {JSX.Element} The rendered skeleton loader.
+ * @param {string} [props.size="h-8 w-8"] - Tailwind CSS classes for the height and width of the spinner.
+ * @param {string} [props.thickness="border-4"] - Tailwind CSS class for the border thickness of the spinner.
+ * @param {string} [props.className=""] - Additional Tailwind CSS classes to apply to the spinner container.
+ * @returns {JSX.Element} The rendered spinning loader.
  */
-const SkeletonLoader = ({ count = 5, className = "" }) => {
+const SpinningLoader = ({ size = "h-8 w-8", thickness = "border-4", className = "" }) => {
   return (
-    <div className={`p-2 space-y-3 ${className}`}>
-      {[...Array(count)].map((_, index) => (
-        <div
-          key={index}
-          className="flex items-center gap-4 p-3 rounded-xl bg-gradient-to-r from-purple-900/10 to-pink-900/10 animate-pulse shadow-sm"
-        >
-          {/* Avatar Skeleton */}
-          <div className="w-11 h-11 rounded-full bg-gradient-to-r from-purple-700 to-pink-700"></div>
-          {/* Username/Content Line Skeleton */}
-          <div className="flex-1 h-4 rounded bg-gradient-to-r from-purple-700 to-pink-700"></div>
-        </div>
-      ))}
-    </div>
+    <div
+      className={`
+        ${size} ${thickness} rounded-full animate-spin
+        border-solid border-r-transparent border-t-transparent
+        border-b-purple-500 border-l-pink-500
+        ${className}
+      `}
+      style={{
+        // Using custom CSS for the gradient border as Tailwind's direct border gradients are limited
+        // This creates a subtle gradient effect on the spinning part
+        borderColor: 'rgba(255, 255, 255, 0.3)', // Base transparent white for the main border
+        borderTopColor: 'transparent', // Make top transparent for the spin effect
+        borderRightColor: 'transparent', // Make right transparent for the spin effect
+        borderBottomColor: '#d946ef', // Pink part of the gradient
+        borderLeftColor: '#a855f7',   // Purple part of the gradient
+      }}
+    ></div>
   );
 };
 
-export default SkeletonLoader;
+export default SpinningLoader;
